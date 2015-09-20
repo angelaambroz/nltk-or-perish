@@ -4,6 +4,7 @@ import urllib2
 import urllib
 import os
 import re
+import random
 import pprint
 import operator
 from bs4 import BeautifulSoup
@@ -87,8 +88,16 @@ def stripText(papers, top):
 # 		file.write(str(strings))
 # 		file.close()
 
-# NLTK: Cleaning
+# NLTK: Cleaning + Analysis
 # Ch. 3 of the NLTK O'Reilly book is proving helpful here
+
+
+# Fun: p.125, NLTK book
+def Przm(word):
+	regexp = r'^[AEIOUaeiou]+|[AEIOUaeiou]+$|[^AEIOUaeiou]'
+	pieces = re.findall(regexp, word)
+	return ''.join(pieces)
+
 
 def Analysis(name):
 	raw = open(DIR + "corpi/" + name + ".txt", 'rU').read()
@@ -96,26 +105,30 @@ def Analysis(name):
 	tokens = nltk.word_tokenize(raw)
 	tokens = [w.lower() for w in tokens]
 
+	print nltk.tokenwrap(Przm(w) for w in tokens[:20])
+
 	# Cleaning that cleans nothing (something wrong w my RE?)
 	tokens = [re.sub(r'^([\"\n]|[\\x[a-z0-9]])+[a-zA-z]$', '', w) for w in tokens]
 
 	vocab = sorted(set(tokens))
+	print len(vocab)
 
 	sents = nltk.sent_tokenize(raw)
-
-	print len(vocab)
+	random_sentence = random.choice(sents)
+	print random_sentence
 
 	# fdist = nltk.FreqDist(ch.lower() for ch in raw if ch.isalpha())
 
 	text = nltk.Text(tokens)
 	print text[1020:1060]
 
-	ings = {}
-
 	fdist = nltk.FreqDist(tokens)
 	fdist = sorted(fdist.items(), key=operator.itemgetter(1))
+	# print fdist[-50:]
 
-	print fdist[-50:]
+	# long_words = [w for w in tokens if len(w) > 15]
+
+	ings = {}
 
 	# for word in tokens:
 	# 	elif word.endswith("ing"):
@@ -131,37 +144,17 @@ def Analysis(name):
 
 
 
+
+
+
 # Demo
-# Analysis("Asim")
+Analysis("Asim")
 
 
 # Analyzing all profs
 
-for pi in PROFS:
-	if pi['name']!="Mike":
-		print "Now analyzing: " + pi['name']
-		Analysis(pi['name'])
-
-
-
-# NLTK: Analysis
-
-# fdist = nltk.FreqDist(DIR + "corpi/Asim.txt")
-# tokens = set(DIR + "corpi/Asim.txt")
-# tokens = sorted(tokens)
-
-# long_words = [w for w in tokens if len(w) > 15]
-
-# print fdist.keys()
-
-# fdist = FreqDist(text5)
-# vocab = fdist.keys()
-
-# tokens = set(text5)
-# tokens = sorted(tokens)
-
-# long_words = [w for w in tokens if len(w) > 15]
-
-# text5.collocations()
-
+# for pi in PROFS:
+# 	if pi['name']!="Mike":
+# 		print "Now analyzing: " + pi['name']
+# 		Analysis(pi['name'])
 
