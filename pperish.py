@@ -15,10 +15,11 @@ import nltk
 # Some globals
 DIR = "/Users/angelaambroz/python/_resources/nltk/"
 PROFS = [{'name': 'Rohini', 'homepage': 'http://www.hks.harvard.edu/fs/rpande/research.html', 'top': 'http://www.hks.harvard.edu/fs/rpande/'}, 
-{'name': 'Esther', 'homepage': 'http://economics.mit.edu/faculty/eduflo/papers', 'top': 'http://economics.mit.edu'}, 
 {'name': 'Asim', 'homepage': 'http://www.hks.harvard.edu/fs/akhwaja/', 'top': 'http://www.hks.harvard.edu/fs/akhwaja/'},
 {'name': 'Rema', 'homepage': 'http://scholar.harvard.edu/remahanna/published-and-forthcoming', 'top': ''},
-{'name': 'Mike', 'homepage': 'http://scholar.harvard.edu/michael-callen/current-publications', 'top': ''}
+{'name': 'Mike', 'homepage': 'http://scholar.harvard.edu/michael-callen/current-publications', 'top': ''},
+{'name': 'Abhijit', 'homepage': 'http://economics.mit.edu/faculty/banerjee/papers', 'top': 'http://economics.mit.edu'},
+{'name': 'Esther', 'homepage': 'http://economics.mit.edu/faculty/eduflo/papers', 'top': 'http://economics.mit.edu'}
 ]
 
 QUICKRUN = 1 # switch to 0 to download all
@@ -73,20 +74,22 @@ def stripText(papers, top):
 # Create corpus
 
 # for pi in PROFS:
-# 	print "Now doing: " + pi['name']
-# 	print "Getting " + pi['name'] + "'s papers..."
-# 	papers = getPapers(pi['homepage'])
-# 	print "Scraping the text from " + pi['name'] + "'s papers..."
-# 	name = pi['name']
-# 	file = open(DIR + "corpi/" + pi['name'] + ".txt", "w")
-# 	strings = stripText(papers, pi['top'])
-# 	print strings[0:5]
+# 	if not os.path.isfile(DIR + "corpi/" + pi["name"] + ".txt"):
+# 		print "Now doing: " + pi['name']
+# 		print "Getting " + pi['name'] + "'s papers..."
+# 		papers = getPapers(pi['homepage'])
+# 		print "Scraping the text from " + pi['name'] + "'s papers..."
+# 		name = pi['name']
+# 		file = open(DIR + "corpi/" + pi['name'] + ".txt", "w")
+# 		strings = stripText(papers, pi['top'])
+# 		print strings[0:5]
 
-# 	if strings=="":
-# 		file.close()
-# 	else:
-# 		file.write(str(strings))
-# 		file.close()
+# 		if strings=="":
+# 			file.close()
+# 		else:
+# 			file.write(str(strings))
+# 			file.close()
+
 
 # NLTK: Cleaning + Analysis
 # Ch. 3 of the NLTK O'Reilly book is proving helpful here
@@ -99,8 +102,8 @@ def Przm(word):
 	return ''.join(pieces)
 
 
-def Analysis(name):
-	raw = open(DIR + "corpi/" + name + ".txt", 'rU').read()
+def Analysis(corpus):
+	raw = open(corpus, 'rU').read()
 
 	tokens = nltk.word_tokenize(raw)
 	tokens = [w.lower() for w in tokens]
@@ -124,7 +127,11 @@ def Analysis(name):
 
 	fdist = nltk.FreqDist(tokens)
 	fdist = sorted(fdist.items(), key=operator.itemgetter(1))
-	# print fdist[-50:]
+	print fdist[-10:]
+	top_words = fdist[-10:]
+
+	cfd = nltk.ConditionalFreqDist(top_words)
+	cfd.tabulate()
 
 	# long_words = [w for w in tokens if len(w) > 15]
 
@@ -144,17 +151,14 @@ def Analysis(name):
 
 
 
-
-
-
 # Demo
-Analysis("Asim")
+Analysis(DIR + "corpi/Asim.txt")
 
 
-# Analyzing all profs
+# # Analyzing all corpi
 
-# for pi in PROFS:
-# 	if pi['name']!="Mike":
-# 		print "Now analyzing: " + pi['name']
-# 		Analysis(pi['name'])
+# for corpus in os.listdir(DIR + "corpi/"):
+# 	print "Now analyzing: " + corpus
+# 	Analysis(corpus)
+
 
