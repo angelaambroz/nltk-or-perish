@@ -18,7 +18,7 @@ NLTK analysis.
 
 # Some globals
 DIR = os.getcwd()
-stop = stopwords.words('english')
+STOP = stopwords.words('english')
 
 
 # NLTK: Cleaning + Analysis
@@ -45,23 +45,23 @@ def Tokenize(rawfile):
 
 def Characteristics(words):
 	vocab = sorted(set(words))
-	print len(vocab)
+	bigram_fd = nltk.FreqDist(nltk.bigrams(words))
+
+	return len(vocab), bigram_fd
 
 
-def randomSentence(sent):
+def randomSentence(sents):
 	random_sentence = random.choice(sents)
 	return random_sentence
 
 def FreqDists(words):
 	fdist = nltk.FreqDist(words)
-	fdist = sorted(fdist.items(), key=operator.itemgetter(1))
+	# fdist = sorted(fdist.items(), key=operator.itemgetter(1))
+	top_words = [i for i in fdist.most_common(50) if i not in STOP]
 
 	cfd = nltk.ConditionalFreqDist(top_words)
-	cfd.tabulate()
 
-	fdist = nltk.FreqDist(ch.lower() for ch in raw if ch.isalpha())
-
-	return fdist, cfd
+	return fdist, cfd, top_words
 
 
 # A bunch of print statements?
@@ -70,19 +70,21 @@ def Analysis(corpus):
 
 	words, sents, text = Tokenize(raw)
 
+	random_sentence = randomSentence(sents)
+
+	fdist, cfd, top_words = FreqDists(words)
+
 	print nltk.tokenwrap(Przm(w) for w in words[:20])
+	print fdist
+	cfd.tabulate()
 
-	bigram_fd = nltk.FreqDist(nltk.bigrams(words))
-	print bigram_fd
-
-	# print random_sentence
 
 	# print text[1020:1060]
-	# print [i for i in fdist.most_common(50) if i not in stop]
+	# print [i for i in fdist.most_common(50) if i not in STOP]
 
 	# long_words = [w for w in tokens if len(w) > 15]
 
-	ings = {}
+	# ings = {}
 
 	# for word in tokens:
 	# 	elif word.endswith("ing"):
